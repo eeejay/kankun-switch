@@ -1,0 +1,104 @@
+<html>
+<head>
+  <title>Smart Switch</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #a00;
+      transition: background-color 0.25s ease;
+    }
+
+    button {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: block;
+      margin: auto;
+      width: 80vw;
+      height: 80vh;
+      max-height: 80vw;
+      max-width: 80vh;
+      border: 2px solid rgba(255,255,255,0.25);
+      background-color: rgba(255,255,255,0.4);
+      border-radius: 100%;
+      outline: 0;
+      transition: transform 0.25s ease;
+    }
+
+    button:focus {
+      border: 2px solid rgba(255,255,255,0.5);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button::-moz-focus-inner {
+      border: 0;
+    }
+
+    button::after {
+
+    }
+
+    #icon path {
+      fill: #a00;
+      transition: fill 0.25s ease;
+    }
+
+    #icon circle {
+      fill: rgba(255,255,255,0.9);
+    }
+
+    #icon {
+      width: 75%;
+      height: auto;
+    }
+
+    body.on {
+      background-color: #0a0;
+    }
+
+    body.on #icon path {
+      fill: #0a0;
+    }
+
+  </style>
+
+  <script>
+    function buttonpressed() {
+      let mode = document.body.classList.contains("on") ? "off" : "on";
+      let url = `/cgi-bin/switch.cgi?${mode}`;
+      fetch(url).then(response => {
+        if (response.status !== 200) {
+          return;
+        }
+
+        response.json().then(data => {
+          toggleSwitch(data.on);
+        }, console.warn.bind(console));
+      });
+    }
+
+    function toggleSwitch(on) {
+      document.querySelector('button').title = on ? "Turn off" : "Turn on";
+      document.body.classList.toggle("on", on);
+    }
+  </script>
+</head>
+<body>
+  <button title="Turn on" onclick="buttonpressed();">
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
+      <circle cx="18" cy="18" r="18"></circle>
+      <path d="m 17,8.46875 0,10 2,0 0,-10 -2,0 z m 5,2 -0.875,1.78125 c 2.304452,1.144792 3.875,3.524416 3.875,6.28125 0,3.877484 -3.122516,7 -7,7 -3.877484,0 -7,-3.122516 -7,-7 0,-2.717232 1.530795,-5.055475 3.78125,-6.21875 L 13.875,10.53125 c -2.895544,1.496725 -4.875,4.525232 -4.875,8 0,4.958516 4.041484,9 9,9 4.958516,0 9,-4.041484 9,-9 0,-3.525166 -2.034452,-6.589292 -5,-8.0625 z"></path>
+    </svg>
+  </button>
+  <script>
+    fetch(`/cgi-bin/switch.cgi`).then(response => {
+      response.json().then(data => toggleSwitch(data.on));
+    });
+  </script>
+</body>
+</html>
