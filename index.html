@@ -68,7 +68,15 @@
   </style>
 
   <script>
+    function isDemo() {
+      return location.search == "?demo";
+    }
+
     function buttonpressed() {
+      if (isDemo()) {
+        toggleSwitch(!document.body.classList.contains("on"));
+      }
+
       let mode = document.body.classList.contains("on") ? "off" : "on";
       let url = `/cgi-bin/switch.cgi?${mode}`;
       fetch(url).then(response => {
@@ -96,9 +104,11 @@
     </svg>
   </button>
   <script>
-    fetch(`/cgi-bin/switch.cgi`).then(response => {
-      response.json().then(data => toggleSwitch(data.on));
-    });
+    if (!isDemo()) {
+      fetch(`/cgi-bin/switch.cgi`).then(response => {
+        response.json().then(data => toggleSwitch(data.on));
+      });
+    }
   </script>
 </body>
 </html>
