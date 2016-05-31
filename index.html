@@ -72,14 +72,19 @@
       return location.search == "?demo";
     }
 
+    function fetchCGI(mode) {
+      let request = new Request(`/cgi-bin/switch.cgi?${mode}`, { credentials: "same-origin" });
+      return fetch(request);
+      
+    }
+
     function buttonpressed() {
       if (isDemo()) {
         toggleSwitch(!document.body.classList.contains("on"));
       }
 
       let mode = document.body.classList.contains("on") ? "off" : "on";
-      let url = `/cgi-bin/switch.cgi?${mode}`;
-      fetch(url).then(response => {
+      fetchCGI(mode).then(response => {
         if (response.status !== 200) {
           return;
         }
@@ -105,7 +110,7 @@
   </button>
   <script>
     if (!isDemo()) {
-      fetch(`/cgi-bin/switch.cgi`).then(response => {
+      fetchCGI('status').then(response => {
         response.json().then(data => toggleSwitch(data.on));
       });
     }
